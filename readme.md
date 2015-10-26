@@ -1,11 +1,11 @@
-# Stateful.js
+# make-stateful
 
-Stateful.js is a library that turns your JavaScript objects into self-contained state machines. The goal is to provide a flexible state machine with minimal configuration.
+make-stateful is a library that turns your JavaScript objects into self-contained state machines. The goal is to provide a flexible state machine with minimal configuration.
 
 ## API
 
-### `Stateful.extend(Class)`
-Extends a JS class with the functions that Stateful requires.
+### `makeStateful(Class)`
+Extends a JS class with the functions that makeStateful requires.
 
 ### `Class.addState(stateName, stateDefinition)`
 Adds a named state definition to the extended Class.
@@ -22,7 +22,7 @@ var Enemy = function(health) {
 Enemy.prototype.speak = function() {
   return 'My health is ' + this.health;
 }
-Stateful.extend(Enemy);
+makeStateful(Enemy);
 
 Enemy.addState('Immortal', {
   speak: function() { // overridden

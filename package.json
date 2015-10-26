@@ -1,5 +1,5 @@
 {
-  "name": "stateful.js",
+  "name": "make-stateful",
   "version": "1.0.0",
   "description": "Turns your JavaScript objects into little state machines.",
   "main": "lib/index.js",
@@ -10,8 +10,8 @@
     "lint": "eslint src spec",
     "check": "npm run lint && npm run test",
     "build:lib": "babel src --out-dir lib",
-    "build:umd": "webpack src/index.js dist/stateful.js --config webpack.config.development.js",
-    "build:umd:min": "webpack src/index.js dist/stateful.min.js --config webpack.config.production.js",
+    "build:umd": "webpack src/index.js dist/make-stateful --config webpack.config.development.js",
+    "build:umd:min": "webpack src/index.js dist/make-stateful.min.js --config webpack.config.production.js",
     "build": "npm run build:lib && npm run build:umd && npm run build:umd:min",
     "preversion": "npm run clean && npm run check",
     "version": "npm run build",
@@ -20,7 +20,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/uken/stateful.js.git"
+    "url": "https://github.com/uken/make-stateful.git"
   },
   "keywords": [
     "stateful",
@@ -31,9 +31,9 @@
   "author": "Tanner Rogalsky",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/uken/stateful.js/issues"
+    "url": "https://github.com/uken/make-stateful/issues"
   },
-  "homepage": "https://github.com/uken/stateful.js",
+  "homepage": "https://github.com/uken/make-stateful",
   "devDependencies": {
     "babel": "^5.8.23",
     "babel-core": "^5.8.25",
@@ -48,7 +48,7 @@
   "dependencies": {
     "core-js": "^1.2.2"
   },
-  "npmName": "stateful.js",
+  "npmName": "make-stateful",
   "npmFileMap": [
     {
       "basePath": "/dist/",

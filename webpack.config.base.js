@@ -7,7 +7,7 @@ module.exports = {
     ]
   },
   output: {
-    library: 'Stateful',
+    library: 'make-stateful',
     libraryTarget: 'umd'
   },
   resolve: {
