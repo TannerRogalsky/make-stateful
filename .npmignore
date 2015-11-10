@@ -1,6 +1,7 @@
 *.log
 /.*/
 /spec/
+/interfaces/
 /.eslint*
 /.gitignore
 /.npmignore
