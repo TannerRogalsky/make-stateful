@@ -1,12 +1,15 @@
+/* @flow */
 import WeakMap from 'core-js/library/es6/weak-map';
 import Reflect from 'core-js/library/es6/reflect';
 
 const FUNCTION_TYPE = 'function';
-const isFunction = function(func) {
+const isFunction = function(func : ?Function) : ?boolean {
   return typeof func === FUNCTION_TYPE;
 };
 
-const extend = function(klass) {
+const DEFAULT_STATE_NAME = 'DEFAULT_NO_STATE';
+
+const extend = function(klass : Object) {
   const currentStateNames = new WeakMap();
   const originalPrototype = {};
   const possibleStates = {};
@@ -18,12 +21,12 @@ const extend = function(klass) {
     }
   }
 
-  klass.prototype.gotoState = function(stateName, ...args) {
+  klass.prototype.gotoState = function(stateName : string = DEFAULT_STATE_NAME, ...args) {
     const currentStateName = currentStateNames.get(this);
     const currentState = possibleStates[currentStateName];
     const state = possibleStates[stateName];
 
-    if (process.env.NODE_ENV !== 'production' && stateName && !state) {
+    if (process.env.NODE_ENV !== 'production' && stateName !== DEFAULT_STATE_NAME && !state) {
       throw new Error('That state is not defined for this object.');
     }
 
@@ -51,7 +54,7 @@ const extend = function(klass) {
     }
   };
 
-  klass.addState = function(stateName, state) {
+  klass.addState = function(stateName : string, state : Object) {
     possibleStates[stateName] = state;
   };
 };
