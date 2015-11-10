@@ -2,38 +2,38 @@ require('should');
 import sinon from 'sinon';
 import makeStateful from '../src/index';
 
-describe('makeStateful', function(){
-  it('should be a function', function(){
+describe('makeStateful', function() {
+  it('should be a function', function() {
     makeStateful.should.be.type('function');
   });
 });
 
-describe('An Extended Class', function(){
-  var TestClass;
+describe('An Extended Class', function() {
+  let TestClass;
 
-  beforeEach(function(){
-    TestClass = function(){};
+  beforeEach(function() {
+    TestClass = function() {};
     makeStateful(TestClass);
   });
 
-  describe('#addState(stateName, stateDefinition)', function(){
-    it('should be a function', function(){
+  describe('#addState(stateName, stateDefinition)', function() {
+    it('should be a function', function() {
       TestClass.addState.should.be.type('function');
     });
 
-    it('adds a state to the possible states', function(){
-      var testInstance = new TestClass();
+    it('adds a state to the possible states', function() {
+      const testInstance = new TestClass();
       testInstance.gotoState.bind(testInstance, 'TestState').should.throw();
       TestClass.addState('TestState', {});
       testInstance.gotoState.bind(testInstance, 'TestState').should.not.throw();
     });
   });
 
-  describe('A makeStateful Instance', function(){
-    var testInstance;
+  describe('A makeStateful Instance', function() {
+    let testInstance;
 
-    beforeEach(function(){
-      var TestState = {
+    beforeEach(function() {
+      const TestState = {
         enterState: sinon.spy(),
         testProperty: sinon.spy(),
         exitState: sinon.spy()
@@ -42,39 +42,39 @@ describe('An Extended Class', function(){
       testInstance = new TestClass();
     });
 
-    describe('#gotoState', function(){
-      it('should be a function', function(){
+    describe('#gotoState', function() {
+      it('should be a function', function() {
         testInstance.gotoState.should.be.type('function');
       });
 
-      it('should throw when going to an undefined state', function(){
+      it('should throw when going to an undefined state', function() {
         testInstance.gotoState.bind(testInstance, 'NotAState').should.throw();
       });
 
-      it('adds properties from the state definition to the instance', function(){
+      it('adds properties from the state definition to the instance', function() {
         testInstance.should.not.have.property('testProperty');
         testInstance.gotoState('TestState');
         testInstance.should.have.property('testProperty');
       });
 
-      it('returns to the base state when called without a state name', function(){
+      it('returns to the base state when called without a state name', function() {
         testInstance.gotoState('TestState');
         testInstance.should.have.property('testProperty');
         testInstance.gotoState();
         testInstance.should.not.have.property('testProperty');
       });
 
-      it('calls the transition callbacks if they exist', function(){
+      it('calls the transition callbacks if they exist', function() {
         testInstance.gotoState('TestState');
-        var enterState = testInstance.enterState;
-        var exitState = testInstance.exitState;
+        const enterState = testInstance.enterState;
+        const exitState = testInstance.exitState;
         enterState.calledOnce.should.eql(true);
         testInstance.gotoState();
         exitState.calledOnce.should.eql(true);
       });
 
-      it('passes its arguments to the transition callbacks', function(){
-        var testArgument = 'test argument';
+      it('passes its arguments to the transition callbacks', function() {
+        const testArgument = 'test argument';
         testInstance.gotoState('TestState', testArgument);
         testInstance.enterState.calledWith(testArgument).should.eql(true);
       });
@@ -82,9 +82,9 @@ describe('An Extended Class', function(){
   });
 
   describe('Multiples makeStateful Instances', function() {
-    var testInstances;
+    let testInstances;
 
-    beforeEach(function(){
+    beforeEach(function() {
       TestClass.addState('TestState1', {
         enterState: sinon.spy(),
         testProperty1: sinon.spy(),
@@ -97,17 +97,17 @@ describe('An Extended Class', function(){
       });
 
       testInstances = new Array(5);
-      for (var i = 0; i < testInstances.length; i++) {
+      for (let i = 0; i < testInstances.length; i++) {
         testInstances[i] = new TestClass();
       }
     });
 
-    describe('#gotoState', function(){
-      it('only sets the current state for the instance on which it was called', function(){
-        var testInstance1 = testInstances[0];
+    describe('#gotoState', function() {
+      it('only sets the current state for the instance on which it was called', function() {
+        const testInstance1 = testInstances[0];
         testInstance1.gotoState('TestState1');
 
-        var testInstance2 = testInstances[1];
+        const testInstance2 = testInstances[1];
         testInstance2.gotoState('TestState2');
 
         testInstance1.gotoState('TestState2');
