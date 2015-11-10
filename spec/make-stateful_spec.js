@@ -1,6 +1,6 @@
 require('should');
-var sinon = require('sinon');
-var makeStateful = require('../src/index.js');
+import sinon from 'sinon';
+import makeStateful from '../src/index';
 
 describe('makeStateful', function(){
   it('should be a function', function(){

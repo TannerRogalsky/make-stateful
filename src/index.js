@@ -1,4 +1,5 @@
 import WeakMap from 'core-js/library/es6/weak-map';
+import Reflect from 'core-js/library/es6/reflect';
 
 const FUNCTION_TYPE = 'function';
 const isFunction = function(func) {
