@@ -1,62 +1,48 @@
 /* @flow */
-import WeakMap from 'core-js/library/es6/weak-map';
-import Reflect from 'core-js/library/es6/reflect';
-
 const FUNCTION_TYPE = 'function';
 const isFunction = function(func : ?Function) : ?boolean {
   return typeof func === FUNCTION_TYPE;
 };
 
-const DEFAULT_STATE_NAME = 'DEFAULT_NO_STATE';
+const extend = function(klass) {
+  var states = {undefined: klass.prototype};
 
-const extend = function(klass : Object) {
-  const currentStateNames = new WeakMap();
-  const originalPrototype = {};
-  const possibleStates = {};
-
-  for (const k in klass.prototype) {
-    if (klass.prototype.hasOwnProperty(k)) {
-      const v = klass.prototype[k];
-      originalPrototype[k] = v;
-    }
+  klass.addState = function(stateName, state) {
+    states[stateName] = state;
   }
 
-  klass.prototype.gotoState = function(stateName : string = DEFAULT_STATE_NAME, ...args) {
-    const currentStateName = currentStateNames.get(this);
-    const currentState = possibleStates[currentStateName];
-    const state = possibleStates[stateName];
+  return new Proxy(klass, {
+    construct: function(target, args) {
+      var currentState = target.prototype;
+      var instance = Reflect.construct(target, args);
 
-    if (process.env.NODE_ENV !== 'production' && stateName !== DEFAULT_STATE_NAME && !state) {
-      throw new Error('That state is not defined for this object.');
-    }
+      instance.gotoState = function(stateName, ...args) {
+        if (process.env.NODE_ENV !== 'production' && states[stateName] == null) {
+          throw new Error('That state is not defined for this object.');
+        }
 
-    if (isFunction(this.exitState)) {
-      this.exitState();
-    }
+        if (isFunction(this.exitState)) {
+          this.exitState();
+        }
 
-    if (currentState !== null) {
-      for (const k in currentState) {
-        if (currentState.hasOwnProperty(k)) {
-          Reflect.deleteProperty(this, k);
+        currentState = states[stateName];
+
+        if (isFunction(this.enterState)) {
+          this.enterState(...args);
         }
       }
-    }
 
-    if (state) {
-      Object.assign(this, state);
-    } else {
-      Object.assign(this, originalPrototype);
+      return new Proxy(instance, {
+        get: function(target, name, receiver) {
+          if (currentState[name]) {
+            return currentState[name];
+          } else {
+            return target[name];
+          }
+        }
+      });
     }
-
-    currentStateNames.set(this, stateName);
-    if (isFunction(this.enterState)) {
-      this.enterState(...args);
-    }
-  };
-
-  klass.addState = function(stateName : string, state : Object) {
-    possibleStates[stateName] = state;
-  };
-};
+  });
+}
 
 export default extend;
