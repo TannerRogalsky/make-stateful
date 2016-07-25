@@ -13,7 +13,7 @@ describe('An Extended Class', function() {
 
   beforeEach(function() {
     TestClass = function() {};
-    makeStateful(TestClass);
+    TestClass = makeStateful(TestClass);
   });
 
   describe('#addState(stateName, stateDefinition)', function() {
@@ -106,12 +106,16 @@ describe('An Extended Class', function() {
       it('only sets the current state for the instance on which it was called', function() {
         const testInstance1 = testInstances[0];
         testInstance1.gotoState('TestState1');
+        testInstance1.should.have.property('testProperty1');
 
         const testInstance2 = testInstances[1];
         testInstance2.gotoState('TestState2');
+        testInstance1.should.have.property('testProperty1');
+        testInstance2.should.have.property('testProperty2');
 
         testInstance1.gotoState('TestState2');
         testInstance1.should.not.have.property('testProperty1');
+        testInstance1.should.have.property('testProperty2');
       });
     });
   });
