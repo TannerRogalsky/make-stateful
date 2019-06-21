@@ -1,62 +1,44 @@
-/* @flow */
-import WeakMap from 'core-js/library/es6/weak-map';
-import Reflect from 'core-js/library/es6/reflect';
-
-const FUNCTION_TYPE = 'function';
-const isFunction = function(func : ?Function) : ?boolean {
-  return typeof func === FUNCTION_TYPE;
+const isFunction = function isFunction(func) {
+  return typeof func === 'function';
 };
 
-const DEFAULT_STATE_NAME = 'DEFAULT_NO_STATE';
+export default function extend(klass) {
+  const states = { undefined: klass.prototype };
 
-const extend = function(klass : Object) {
-  const currentStateNames = new WeakMap();
-  const originalPrototype = {};
-  const possibleStates = {};
+  // eslint-disable-next-line no-param-reassign
+  klass.addState = function addState(stateName, state) {
+    states[stateName] = state;
+  };
 
-  for (const k in klass.prototype) {
-    if (klass.prototype.hasOwnProperty(k)) {
-      const v = klass.prototype[k];
-      originalPrototype[k] = v;
-    }
-  }
+  return new Proxy(klass, {
+    construct(constructTarget, constructArgs) {
+      let currentState = constructTarget.prototype;
+      const instance = Reflect.construct(constructTarget, constructArgs);
 
-  klass.prototype.gotoState = function(stateName : string = DEFAULT_STATE_NAME, ...args) {
-    const currentStateName = currentStateNames.get(this);
-    const currentState = possibleStates[currentStateName];
-    const state = possibleStates[stateName];
-
-    if (process.env.NODE_ENV !== 'production' && stateName !== DEFAULT_STATE_NAME && !state) {
-      throw new Error('That state is not defined for this object.');
-    }
-
-    if (isFunction(this.exitState)) {
-      this.exitState();
-    }
-
-    if (currentState !== null) {
-      for (const k in currentState) {
-        if (currentState.hasOwnProperty(k)) {
-          Reflect.deleteProperty(this, k);
+      instance.gotoState = function gotoState(stateName, ...gotoStateArgs) {
+        if (process.env.NODE_ENV !== 'production' && states[stateName] == null) {
+          throw new Error('That state is not defined for this object.');
         }
-      }
-    }
 
-    if (state) {
-      Object.assign(this, state);
-    } else {
-      Object.assign(this, originalPrototype);
-    }
+        if (isFunction(this.exitState)) {
+          this.exitState();
+        }
 
-    currentStateNames.set(this, stateName);
-    if (isFunction(this.enterState)) {
-      this.enterState(...args);
-    }
-  };
+        currentState = states[stateName];
 
-  klass.addState = function(stateName : string, state : Object) {
-    possibleStates[stateName] = state;
-  };
-};
+        if (isFunction(this.enterState)) {
+          this.enterState(...gotoStateArgs);
+        }
+      };
 
-export default extend;
+      return new Proxy(instance, {
+        get(getTarget, name) {
+          if (currentState[name]) {
+            return currentState[name];
+          }
+          return getTarget[name];
+        },
+      });
+    },
+  });
+}

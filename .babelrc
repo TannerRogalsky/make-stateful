@@ -2,17 +2,5 @@
   "presets": [
     "es2015",
     "react"
-  ],
-  "env": {
-    "development": {
-      "plugins": [
-        "typecheck"
-      ]
-    },
-    "production": {
-      "plugins": [
-        "transform-flow-strip-types"
-      ]
-    }
-  }
+  ]
 }
