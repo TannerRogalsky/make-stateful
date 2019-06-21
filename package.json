@@ -54,9 +54,6 @@
     "sinon": "^1.17.2",
     "webpack": "^1.12.3"
   },
-  "dependencies": {
-    "core-js": "^1.2.6"
-  },
   "npmName": "make-stateful",
   "npmFileMap": [
     {
