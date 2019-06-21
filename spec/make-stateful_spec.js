@@ -13,9 +13,7 @@ describe('An Extended Class', () => {
   let TestClass;
 
   beforeEach(() => {
-    // eslint-disable-next-line no-shadow
-    TestClass = function TestClass() {};
-    TestClass = makeStateful(TestClass);
+    TestClass = makeStateful(class {});
   });
 
   describe('#addState(stateName, stateDefinition)', () => {

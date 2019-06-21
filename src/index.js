@@ -33,8 +33,14 @@ export default function extend(klass) {
 
       return new Proxy(instance, {
         get(getTarget, name) {
-          if (currentState[name]) {
-            return currentState[name];
+          const propertyDescriptor = Object.getOwnPropertyDescriptor(currentState, name);
+          if (propertyDescriptor) {
+            if (propertyDescriptor.get) {
+              return propertyDescriptor.get.apply(instance);
+            }
+            if (propertyDescriptor.value) {
+              return propertyDescriptor.value;
+            }
           }
           return getTarget[name];
         },
