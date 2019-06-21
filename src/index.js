@@ -1,22 +1,21 @@
-/* @flow */
-const FUNCTION_TYPE = 'function';
-const isFunction = function(func : ?Function) : ?boolean {
-  return typeof func === FUNCTION_TYPE;
+const isFunction = function isFunction(func) {
+  return typeof func === 'function';
 };
 
-const extend = function(klass) {
-  var states = {undefined: klass.prototype};
+export default function extend(klass) {
+  const states = { undefined: klass.prototype };
 
-  klass.addState = function(stateName, state) {
+  // eslint-disable-next-line no-param-reassign
+  klass.addState = function addState(stateName, state) {
     states[stateName] = state;
-  }
+  };
 
   return new Proxy(klass, {
-    construct: function(target, args) {
-      var currentState = target.prototype;
-      var instance = Reflect.construct(target, args);
+    construct(constructTarget, constructArgs) {
+      let currentState = constructTarget.prototype;
+      const instance = Reflect.construct(constructTarget, constructArgs);
 
-      instance.gotoState = function(stateName, ...args) {
+      instance.gotoState = function gotoState(stateName, ...gotoStateArgs) {
         if (process.env.NODE_ENV !== 'production' && states[stateName] == null) {
           throw new Error('That state is not defined for this object.');
         }
@@ -28,21 +27,18 @@ const extend = function(klass) {
         currentState = states[stateName];
 
         if (isFunction(this.enterState)) {
-          this.enterState(...args);
+          this.enterState(...gotoStateArgs);
         }
-      }
+      };
 
       return new Proxy(instance, {
-        get: function(target, name, receiver) {
+        get(getTarget, name) {
           if (currentState[name]) {
             return currentState[name];
-          } else {
-            return target[name];
           }
-        }
+          return getTarget[name];
+        },
       });
-    }
+    },
   });
 }
-
-export default extend;
