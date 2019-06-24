@@ -2,15 +2,25 @@
 
 module.exports = {
   module: {
-    loaders: [
-      { test: /\.js$/, loaders: ['babel-loader'], exclude: /node_modules/ }
+    rules: [
+      {
+        test: /\.m?js$/,
+        exclude: /(node_modules|bower_components)/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-env']
+          }
+        }
+      }
     ]
   },
   output: {
     library: 'make-stateful',
-    libraryTarget: 'umd'
+    libraryTarget: 'umd',
+    filename: 'make-stateful',
   },
   resolve: {
-    extensions: ['', '.js']
+    extensions: ['.js']
   }
 };
