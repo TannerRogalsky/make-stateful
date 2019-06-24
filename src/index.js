@@ -42,6 +42,9 @@ export default function extend(klass) {
               return propertyDescriptor.value;
             }
           }
+          if (currentState[name]) {
+            return currentState[name];
+          }
           return getTarget[name];
         },
       });
