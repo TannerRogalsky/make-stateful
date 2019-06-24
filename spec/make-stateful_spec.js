@@ -13,9 +13,11 @@ describe('An Extended Class', () => {
   let TestClass;
 
   beforeEach(() => {
-    // eslint-disable-next-line no-shadow
-    TestClass = function TestClass() {};
-    TestClass = makeStateful(TestClass);
+    TestClass = makeStateful(class {
+      get baseTest() { return this.baseTestProperty; }
+
+      set baseTest(baseTestProperty) { this.baseTestProperty = baseTestProperty; }
+    });
   });
 
   describe('#addState(stateName, stateDefinition)', () => {
@@ -79,6 +81,16 @@ describe('An Extended Class', () => {
         const testArgument = 'test argument';
         testInstance.gotoState('TestState', testArgument);
         testInstance.enterState.calledWith(testArgument).should.eql(true);
+      });
+
+      it('works with getters and setters', () => {
+        testInstance.should.have.property('baseTest');
+        testInstance.baseTest = 'baseTest1';
+        testInstance.baseTest.should.equal('baseTest1');
+        testInstance.gotoState('TestState');
+        testInstance.baseTest.should.equal('baseTest1');
+        testInstance.baseTest = 'baseTest2';
+        testInstance.baseTest.should.equal('baseTest2');
       });
     });
   });
