@@ -1,6 +1,6 @@
 {
   "name": "make-stateful",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "description": "Turns your JavaScript objects into little state machines.",
   "main": "lib/index.js",
   "jsnext:main": "src/index.js",
